@@ -1,0 +1,34 @@
+# Byte-code files
+__pycache__/
+*.pyc
+*.pyd
+*.pyo
+
+# Virtual environment
+.venv/
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Editor/OS specific files
+.DS_Store # macOS
+.vscode/ # VS Code
+.idea/ # PyCharm/IntelliJ
+
+# Project specific files/folders
+.env # Environment variables/secrets file
+test_db.db # Example for a local SQLite database
+/site/ # FastAPI Cloud deployment specific
+
+# Python specific
+# Pip
+pip-wheel-metadata/
+*.whl
+
+# Distributions and packaging
+.eggs/
+*.egg-info/
+dist/
+build/
