@@ -1,44 +1,64 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, Response
 from sqlalchemy.orm import Session
 
-from app.schemas.auth import UserRegister, UserLogin, TokenResponse
-from app.models.users import User
-from app.db.deps import get_db
-from app.core.security import verify_password, hash_password
-from app.core.jwt import create_access_token
+from app.schemas.auth import UserRegister, UserLogin
+from app.services.auth_service import (
+    register_user,
+    login_user,
+    refresh_session,
+    logout_user,
+)
+from app.core.deps import get_db, get_refresh_token
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
 
-@router.post("/register", response_model=TokenResponse)
-def register(user: UserRegister, db: Session = Depends(get_db)):
-
-    existing_user = db.query(User).filter(User.email == user.email).first()
-
-    if existing_user:
-        raise HTTPException(status_code=400, detail="Email already registered")
-
-    new_user = User(
-        name=user.name, email=user.email, password_hash=hash_password(user.password)
-    )
-
-    db.add(new_user)
-    db.commit()
-    db.refresh(new_user)
-
-    token = create_access_token({"sub": str(new_user.id)})
-
-    return {"access_token": token}
+@router.post("/register", status_code=201)
+def register(user: UserRegister, response: Response, db: Session = Depends(get_db)):
+    """
+    Register a new developer account.
+    Sets access_token and refresh_token cookies on success.
+    """
+    return register_user(user.name, user.email, user.password, db, response)
 
 
-@router.post("/login", response_model=TokenResponse)
-def login(data: UserLogin, db: Session = Depends(get_db)):
+@router.post("/login")
+def login(data: UserLogin, response: Response, db: Session = Depends(get_db)):
+    """
+    Log in with email and password.
+    - If 2FA is enabled: returns { requires_2fa: true, challenge_token: "..." }
+    - Otherwise: sets auth cookies and returns { message: "Logged in successfully" }
+    """
+    return login_user(data.email, data.password, db, response)
 
-    user = db.query(User).filter(User.email == data.email).first()
 
-    if not user or not verify_password(data.password, user.password_hash):
-        raise HTTPException(status_code=401, detail="Invalid credentials")
+@router.post("/refresh")
+def refresh(
+    response: Response,
+    db: Session = Depends(get_db),
+    refresh_token: str | None = Depends(get_refresh_token),
+):
+    """
+    Exchange a valid refresh_token cookie for a new access+refresh pair.
+    Old refresh token is revoked (rotation). Detects and responds to reuse attacks.
+    """
+    if not refresh_token:
+        from fastapi import HTTPException, status
 
-    token = create_access_token({"sub": str(user.id)})
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="No refresh token"
+        )
+    return refresh_session(refresh_token, db, response)
 
-    return {"access_token": token}
+
+@router.post("/logout")
+def logout(
+    response: Response,
+    db: Session = Depends(get_db),
+    refresh_token: str | None = Depends(get_refresh_token),
+):
+    """
+    Revoke the current session and clear auth cookies.
+    Safe to call even if already logged out.
+    """
+    return logout_user(refresh_token, db, response)
