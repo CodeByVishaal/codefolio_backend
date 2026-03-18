@@ -18,8 +18,9 @@ venv.bak/
 .idea/ # PyCharm/IntelliJ
 
 # Project specific files/folders
-.env # Environment variables/secrets file
+.env
 test_db.db # Example for a local SQLite database
+
 /site/ # FastAPI Cloud deployment specific
 
 # Python specific
