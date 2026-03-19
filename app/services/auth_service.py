@@ -5,6 +5,7 @@ from app.models.users import User, UserRole
 from app.models.token import RefreshToken
 from app.core.security import hash_password, verify_password
 from app.core.jwt import create_access_token, create_refresh_token, decode_token
+from app.core.config import settings
 
 
 # ── Cookie configuration ────────────────────────────────────────────────────
@@ -14,7 +15,7 @@ REFRESH_COOKIE = "refresh_token"
 
 COOKIE_DEFAULTS = dict(
     httponly=True,  # JavaScript cannot read this cookie — blocks XSS theft
-    secure=True,  # Only sent over HTTPS — set to False in local dev if needed
+    secure=settings.DEBUG,  # Only sent over HTTPS — set to False in local dev if needed
     samesite="lax",  # Sent on same-site + top-level cross-site navigations (GET)
     # Blocks CSRF on state-mutating requests (POST/PUT/DELETE)
 )
@@ -162,7 +163,7 @@ def logout_user(refresh_token: str | None, db: Session, response: Response) -> d
 
 def _issue_tokens(user: User, db: Session, response: Response) -> None:
     """Create an access+refresh pair, store the refresh token, set cookies."""
-    access_token = create_access_token({"sub": str(user.id), "role": user.role})
+    access_token = create_access_token({"sub": str(user.id), "role": user.role.value})
     refresh_token, expires_at = create_refresh_token({"sub": str(user.id)})
 
     db_token = RefreshToken(

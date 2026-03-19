@@ -2,7 +2,7 @@ from fastapi import Depends, HTTPException, Request, status
 from sqlalchemy.orm import Session
 
 from app.db.sessions import SessionLocal
-from app.models.user import User, UserRole
+from app.models.users import User, UserRole
 from app.core.jwt import decode_token
 
 
