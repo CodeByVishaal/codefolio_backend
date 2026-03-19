@@ -1,4 +1,5 @@
 from sqlalchemy import Column, Integer, String, DateTime, Enum as SAEnum, Boolean
+from sqlalchemy.orm import relationship
 from datetime import datetime, timezone
 from app.db.base import Base
 import enum
@@ -20,3 +21,14 @@ class User(Base):
     is_verified = Column(Boolean, nullable=False, default=False)
     totp_secret = Column(String, nullable=True, default=None)
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+
+    # Reverse sides of relationships — populated automatically by SQLAlchemy
+    projects = relationship(
+        "Project", back_populates="owner", cascade="all, delete-orphan"
+    )
+    sessions = relationship(
+        "CodingSession", back_populates="owner", cascade="all, delete-orphan"
+    )
+    journal_entries = relationship(
+        "JournalEntry", back_populates="author", cascade="all, delete-orphan"
+    )

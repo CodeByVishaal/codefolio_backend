@@ -1,7 +1,9 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.db.init_db import init_db
+
+# from app.db.init_db import init_db
 from app.api.routes import auth
+import app.models  # noqa: F401 - ensure all models are registered with SQLAlchemy
 
 app = FastAPI(
     title="CodeFolio",
@@ -20,7 +22,7 @@ app.add_middleware(
 )
 
 
-init_db()
+# init_db()
 
 
 @app.get("/")
