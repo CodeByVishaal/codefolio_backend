@@ -1,4 +1,4 @@
-from pydantic import BaseModel, HttpUrl, field_validator
+from pydantic import BaseModel, field_validator
 from datetime import datetime
 from typing import Optional
 from app.models.project import ProjectStatus
@@ -52,3 +52,17 @@ class ProjectResponse(BaseModel):
     updated_at: datetime
 
     model_config = {"from_attributes": True}
+
+
+class ProjectWithTasksResponse(ProjectResponse):
+    """Used on single-project GET — includes full task list."""
+
+    tasks: list["TaskResponse"] = []
+
+    model_config = {"from_attributes": True}
+
+
+# Import at the end to avoid circular imports, then rebuild the model
+from app.schemas.task import TaskResponse  # noqa: E402, F401
+
+ProjectWithTasksResponse.model_rebuild()
