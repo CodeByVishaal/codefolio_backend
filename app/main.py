@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 # from app.db.init_db import init_db
-from app.api.routes import auth, project, tasks, sessions, journal
+from app.api.routes import auth, project, tasks, sessions, journal, users
 import app.models  # noqa: F401 - ensure all models are registered with SQLAlchemy
 
 app = FastAPI(
@@ -35,3 +35,4 @@ app.include_router(project.router, prefix="/api/v1")
 app.include_router(tasks.router, prefix="/api/v1")
 app.include_router(sessions.router, prefix="/api/v1")
 app.include_router(journal.router, prefix="/api/v1")
+app.include_router(users.router, prefix="/api/v1")
