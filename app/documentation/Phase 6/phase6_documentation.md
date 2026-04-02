@@ -24,7 +24,7 @@
 
 ## 1. Overview
 
-Phases 3–5 were about creating and reading individual records — CRUD operations. Phase 6 is entirely different: it takes thousands of individual records and **transforms them into insights**. A developer who has logged 200 sessions doesn't want to see 200 rows — they want to see "I coded 47 hours this month, my longest streak was 12 days, and I spend 60% of my time on DevPulse."
+Phases 3–5 were about creating and reading individual records — CRUD operations. Phase 6 is entirely different: it takes thousands of individual records and **transforms them into insights**. A developer who has logged 200 sessions doesn't want to see 200 rows — they want to see "I coded 47 hours this month, my longest streak was 12 days, and I spend 60% of my time on CodeFolio."
 
 That transformation from raw records to insights is what analytics does.
 
