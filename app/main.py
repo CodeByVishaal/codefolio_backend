@@ -5,6 +5,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.api.routes import auth, project, tasks, sessions, journal, users, analytics
 import app.models  # noqa: F401 - ensure all models are registered with SQLAlchemy
 
+from app.api.routes.tasks import router as tasks_router, user_tasks_router
+
 app = FastAPI(
     title="CodeFolio",
     description="A portfolio management system for developers to showcase their projects and skills.",
@@ -33,6 +35,7 @@ async def read_root():
 app.include_router(auth.router, prefix="/api/v1")
 app.include_router(project.router, prefix="/api/v1")
 app.include_router(tasks.router, prefix="/api/v1")
+app.include_router(user_tasks_router, prefix="/api/v1")
 app.include_router(sessions.router, prefix="/api/v1")
 app.include_router(journal.router, prefix="/api/v1")
 app.include_router(users.router, prefix="/api/v1")

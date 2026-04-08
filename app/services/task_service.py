@@ -76,6 +76,8 @@ def create_task(project_id: int, data: TaskCreate, user: User, db: Session) -> T
 
 # ── List ─────────────────────────────────────────────────────────────────────
 
+# ── List all tasks across all user's projects ────────────────────────────────
+
 
 def list_tasks(
     project_id: int,
@@ -91,6 +93,20 @@ def list_tasks(
         query = query.filter(Task.status == status_filter)
 
     return query.order_by(Task.priority.desc(), Task.created_at.asc()).all()
+
+
+def list_all_tasks(user: User, db: Session) -> list[Task]:
+    """
+    Return every task belonging to any project owned by this user.
+    Used by the frontend's cross-project /tasks page.
+    """
+    return (
+        db.query(Task)
+        .join(Project, Task.project_id == Project.id)
+        .filter(Project.user_id == user.id)
+        .order_by(Task.created_at.desc())
+        .all()
+    )
 
 
 # ── Update ───────────────────────────────────────────────────────────────────

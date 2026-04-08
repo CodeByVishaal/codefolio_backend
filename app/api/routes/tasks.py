@@ -32,6 +32,18 @@ def list_tasks(
     return task_service.list_tasks(project_id, current_user, db, status_filter=status)
 
 
+# Add this second router — no project_id in the prefix
+user_tasks_router = APIRouter(prefix="/tasks", tags=["tasks"])
+
+
+@user_tasks_router.get("", response_model=list[TaskResponse])
+def list_all_tasks(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    return task_service.list_all_tasks(current_user, db)
+
+
 @router.patch("/{task_id}", response_model=TaskResponse)
 def update_task(
     project_id: int,
