@@ -15,7 +15,7 @@ REFRESH_COOKIE = "refresh_token"
 
 COOKIE_DEFAULTS = dict(
     httponly=True,  # JavaScript cannot read this cookie — blocks XSS theft
-    secure=settings.DEBUG,  # Only sent over HTTPS — set to False in local dev if needed
+    secure=not settings.DEBUG,  # Only sent over HTTPS in production
     samesite="lax",  # Sent on same-site + top-level cross-site navigations (GET)
     # Blocks CSRF on state-mutating requests (POST/PUT/DELETE)
 )
@@ -34,14 +34,14 @@ def _set_auth_cookies(
         key=REFRESH_COOKIE,
         value=refresh_token,
         max_age=7 * 24 * 60 * 60,  # 7 days in seconds
-        path="/api/auth/refresh",  # Scoped — only sent to the refresh endpoint
+        path="/api/v1/auth/",  # Scoped to auth endpoints
         **COOKIE_DEFAULTS,
     )
 
 
 def _clear_auth_cookies(response: Response) -> None:
     response.delete_cookie(ACCESS_COOKIE)
-    response.delete_cookie(REFRESH_COOKIE, path="/api/auth/refresh")
+    response.delete_cookie(REFRESH_COOKIE, path="/api/v1/auth/")
 
 
 # ── Register ────────────────────────────────────────────────────────────────
