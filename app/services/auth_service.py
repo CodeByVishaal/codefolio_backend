@@ -16,7 +16,7 @@ REFRESH_COOKIE = "refresh_token"
 COOKIE_DEFAULTS = dict(
     httponly=True,  # JavaScript cannot read this cookie — blocks XSS theft
     secure=not settings.DEBUG,  # Only sent over HTTPS in production
-    samesite="lax",  # Sent on same-site + top-level cross-site navigations (GET)
+    samesite="none",  # Sent on same-site + top-level cross-site navigations (GET)
     # Blocks CSRF on state-mutating requests (POST/PUT/DELETE)
 )
 
