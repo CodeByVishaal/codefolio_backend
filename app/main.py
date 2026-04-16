@@ -17,7 +17,7 @@ app = FastAPI(
 # CORS — required for cookies to work from a browser frontend
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[settings.FRONTEND_URL],
+    allow_origins=[f"{settings.FRONTEND_URL}", f"{settings.BACKEND_URL}"],
     allow_credentials=True,  # MUST be True for cookies
     allow_methods=["*"],
     allow_headers=["*"],
