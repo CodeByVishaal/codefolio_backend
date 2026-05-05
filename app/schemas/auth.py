@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr, field_validator
+from pydantic import BaseModel, EmailStr, field_validator, model_validator
 
 
 class UserRegister(BaseModel):
@@ -31,6 +31,55 @@ class UserRegister(BaseModel):
 class UserLogin(BaseModel):
     email: EmailStr
     password: str
+
+
+class MFASetupRequest(BaseModel):
+    password: str
+
+
+class MFASetupResponse(BaseModel):
+    secret: str
+    otpauth_url: str
+    issuer: str
+
+
+class MFAEnableRequest(BaseModel):
+    password: str
+    code: str
+
+
+class MFARecoveryCodesResponse(BaseModel):
+    message: str
+    recovery_codes: list[str]
+
+
+class MFAVerifyRequest(BaseModel):
+    challenge_token: str
+    code: str | None = None
+    recovery_code: str | None = None
+
+    @model_validator(mode="after")
+    def exactly_one_factor(self) -> "MFAVerifyRequest":
+        if bool(self.code) == bool(self.recovery_code):
+            raise ValueError("Provide either code or recovery_code")
+        return self
+
+
+class MFADisableRequest(BaseModel):
+    password: str
+    code: str | None = None
+    recovery_code: str | None = None
+
+    @model_validator(mode="after")
+    def exactly_one_factor(self) -> "MFADisableRequest":
+        if bool(self.code) == bool(self.recovery_code):
+            raise ValueError("Provide either code or recovery_code")
+        return self
+
+
+class MFAStatusResponse(BaseModel):
+    enabled: bool
+    recovery_codes_remaining: int
 
 
 class TokenResponse(BaseModel):

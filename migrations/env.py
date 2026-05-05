@@ -11,6 +11,7 @@ from app.db.base import Base
 # Alembic's autogenerate will not detect it.
 from app.models.users import User  # noqa: F401
 from app.models.token import RefreshToken  # noqa: F401
+from app.models.mfa import MFARecoveryCode  # noqa: F401
 from app.models.project import Project  # noqa: F401
 from app.models.task import Task  # noqa: F401
 from app.models.session import CodingSession  # noqa: F401

@@ -6,6 +6,7 @@
 
 from app.models.users import User, UserRole
 from app.models.token import RefreshToken
+from app.models.mfa import MFARecoveryCode
 from app.models.project import Project, ProjectStatus
 from app.models.task import Task, TaskStatus, TaskPriority
 from app.models.session import CodingSession
@@ -15,6 +16,7 @@ __all__ = [
     "User",
     "UserRole",
     "RefreshToken",
+    "MFARecoveryCode",
     "Project",
     "ProjectStatus",
     "Task",

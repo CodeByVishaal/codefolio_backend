@@ -58,6 +58,7 @@ def get_me(user: User, db: Session) -> MeResponse:
         email=user.email,
         role=user.role.value,  # .value converts enum to string: "developer"
         is_verified=user.is_verified,
+        mfa_enabled=user.mfa_enabled,
         created_at=user.created_at,
         total_projects=total_projects,
         total_sessions=total_sessions,

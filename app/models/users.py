@@ -20,6 +20,10 @@ class User(Base):
     role = Column(SAEnum(UserRole), nullable=False, default=UserRole.developer)
     is_verified = Column(Boolean, nullable=False, default=False)
     totp_secret = Column(String, nullable=True, default=None)
+    mfa_enabled = Column(Boolean, nullable=False, default=False)
+    mfa_last_used_counter = Column(Integer, nullable=True, default=None)
+    mfa_failed_attempts = Column(Integer, nullable=False, default=0)
+    mfa_locked_until = Column(DateTime, nullable=True, default=None)
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
 
     # Reverse sides of relationships — populated automatically by SQLAlchemy

@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, status, Response
 
@@ -6,7 +8,6 @@ from app.models.token import RefreshToken
 from app.core.security import hash_password, verify_password
 from app.core.jwt import create_access_token, create_refresh_token, decode_token
 from app.core.config import settings
-
 
 # ── Cookie configuration ────────────────────────────────────────────────────
 
@@ -88,14 +89,18 @@ def login_user(email: str, password: str, db: Session, response: Response) -> di
             detail="Invalid email or password",
         )
 
-    if user.totp_secret:
-        # 2FA is enabled — don't issue full session yet.
-        # Return a short-lived challenge token so the client knows to
-        # redirect to the TOTP verification screen.
+    if user.mfa_enabled and user.totp_secret:
+        # MFA is enabled, so issue only a short-lived challenge token.
         challenge_token = create_access_token(
-            {"sub": str(user.id), "scope": "totp_challenge"}
+            {"sub": str(user.id), "scope": "mfa_challenge"},
+            expires_delta=timedelta(minutes=settings.MFA_CHALLENGE_EXPIRE_MINUTES),
         )
-        return {"requires_2fa": True, "challenge_token": challenge_token}
+        return {
+            "requires_2fa": True,
+            "requires_mfa": True,
+            "challenge_token": challenge_token,
+            "expires_in": settings.MFA_CHALLENGE_EXPIRE_MINUTES * 60,
+        }
 
     _issue_tokens(user, db, response)
     return {"message": "Logged in successfully"}

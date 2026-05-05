@@ -71,6 +71,7 @@ class MeResponse(BaseModel):
     email: EmailStr
     role: str
     is_verified: bool
+    mfa_enabled: bool
     created_at: datetime
     # Aggregate stats computed by the service
     total_projects: int

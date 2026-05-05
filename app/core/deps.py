@@ -50,10 +50,10 @@ def get_current_user(
     payload = decode_token(token, expected_type="access")
 
     # Reject tokens issued for the 2FA challenge — they're not full sessions
-    if payload.get("scope") == "totp_challenge":
+    if payload.get("scope") in {"totp_challenge", "mfa_challenge"}:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="2FA verification required",
+            detail="MFA verification required",
         )
 
     user_id = payload.get("sub")
